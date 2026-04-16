@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ---- Load restaurant data ----
   async function load() {
     try {
-      const res = await api.get(`/restaurants/${id}`);
+      const res = await api.get(`/super/restaurants/${id}`);
       restaurant = res.data ? res.data : res;
       render(restaurant);
     } catch (err) {
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const feature = cb.dataset.feature;
         const newFeatures = { ...(restaurant.features_enabled || {}), [feature]: cb.checked };
         try {
-          await api.post(`/restaurants/${id}/features`, {
+          await api.post(`/super/restaurants/${id}/features`, {
           feature: feature,
           enabled: cb.checked
         });
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const action = restaurant.is_active ? 'suspend' : 'reactivate';
     if (!confirm(`Are you sure you want to ${action} "${restaurant.name}"?`)) return;
     try {
-      await api.patch(`/restaurants/${id}`, { is_active: !restaurant.is_active });
+      await api.patch(`/super/restaurants/${id}`, { is_active: !restaurant.is_active });
       toast.success(`Restaurant ${action}d successfully.`);
       load(); // refresh
     } catch (err) {
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('saveNotesBtn').addEventListener('click', async () => {
     const notes = document.getElementById('infoNotes').value;
     try {
-      await api.patch(`/restaurants/${id}`, { notes });
+      await api.patch(`/super/restaurants/${id}`, { notes });
       toast.success('Notes saved.');
     } catch (err) {
       toast.error(err.message);
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     btn.disabled = true;
     btn.textContent = 'Processing...';
     try {
-      const res = await api.post(`/restaurants/${id}/regenerate-key`, { reason });
+      const res = await api.post(`/super/restaurants/${id}/regenerate-key`, { reason });
       closeModal('regenModal');
 
       // Show new key modal
