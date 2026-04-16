@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — DineOS Super Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .plan-bar { display: flex; gap: 8px; margin-top: 12px; }
+    .plan-bar-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--text-secondary);
+    }
+    .plan-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    .growth-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      height: 80px;
+      padding: 0 4px;
+    }
+    .growth-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .growth-bar {
+      width: 100%;
+      background: rgba(99,102,241,0.2);
+      border-radius: 4px 4px 0 0;
+      min-height: 4px;
+      border: 1px solid rgba(99,102,241,0.3);
+      border-bottom: none;
+      transition: var(--transition);
+      position: relative;
+      cursor: default;
+    }
+    .growth-bar:hover { background: rgba(99,102,241,0.4); }
+    .growth-bar-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .growth-bar-count {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--primary-light);
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🍽️</div>
+        <div>
+          <div class="brand-name">DineOS</div>
+          <div class="brand-tagline" style="font-size:10px;color:var(--text-muted)">Super Admin</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a class="nav-item active" href="dashboard.html">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a class="nav-item" href="restaurants.html">
+        <span class="nav-icon">🏪</span> Restaurants
+      </a>
+      <a class="nav-item" href="onboard.html">
+        <span class="nav-icon">➕</span> Onboard New
+      </a>
+
+      <div class="nav-section-label" style="margin-top:8px">System</div>
+      <a class="nav-item" href="#" id="logoutBtn">
+        <span class="nav-icon">🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebarUserAvatar">SA</div>
+        <div>
+          <div class="user-name" id="sidebarUserName">Loading...</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="main-header">
+      <div class="header-title">
+        <h1>Dashboard</h1>
+        <p id="headerDate">—</p>
+      </div>
+      <div class="header-actions">
+        <a href="onboard.html" class="btn btn-primary btn-sm">
+          ➕ Onboard Restaurant
+        </a>
+      </div>
+    </header>
+
+    <main class="page-content animate-fadeInUp">
+
+      <!-- Stats Grid -->
+      <div class="stats-grid" id="statsGrid">
+        <!-- Skeleton loading -->
+        <div class="stat-card primary">
+          <div class="stat-icon primary">🏪</div>
+          <div class="stat-value" id="statTotal">—</div>
+          <div class="stat-label">Total Restaurants</div>
+          <div class="stat-change up" id="statNewMonth">Loading...</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-icon success">✅</div>
+          <div class="stat-value" id="statActive">—</div>
+          <div class="stat-label">Active Restaurants</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-icon warning">🆕</div>
+          <div class="stat-value" id="statNewWeek">—</div>
+          <div class="stat-label">New This Week</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-icon danger">⛔</div>
+          <div class="stat-value" id="statInactive">—</div>
+          <div class="stat-label">Suspended</div>
+        </div>
+      </div>
+
+      <!-- Bottom Grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px">
+
+        <!-- Plan Distribution -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Plan Distribution</div>
+              <div class="card-subtitle">Restaurants by subscription tier</div>
+            </div>
+          </div>
+          <div class="card-body" id="planDistCard">
+            <div style="color:var(--text-muted);font-size:13px">Loading...</div>
+          </div>
+        </div>
+
+        <!-- Growth Chart -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Monthly Growth</div>
+              <div class="card-subtitle">New restaurants (last 6 months)</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="growth-chart" id="growthChart">
+              <div style="color:var(--text-muted);font-size:13px">Loading...</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Recent Restaurants -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recently Onboarded</div>
+            <div class="card-subtitle">Latest 5 restaurants added to the platform</div>
+          </div>
+          <a href="restaurants.html" class="btn btn-secondary btn-sm">View All →</a>
+        </div>
+        <div class="table-wrap" style="border:none;border-radius:0">
+          <table id="recentTable">
+            <thead>
+              <tr>
+                <th>Restaurant</th>
+                <th>City</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="recentTableBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

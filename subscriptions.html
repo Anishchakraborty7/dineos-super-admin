@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscriptions — DineOS Super Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🍽️</div>
+        <div>
+          <div class="brand-name">DineOS</div>
+          <div class="brand-tagline" style="font-size:10px;color:var(--text-muted)">Super Admin</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a class="nav-item" href="restaurants.html"><span class="nav-icon">🏪</span> Restaurants</a>
+      <a class="nav-item active" href="subscriptions.html"><span class="nav-icon">💳</span> Subscriptions</a>
+      <a class="nav-item" href="onboard.html"><span class="nav-icon">➕</span> Onboard New</a>
+      <div class="nav-section-label" style="margin-top:8px">System</div>
+      <a class="nav-item" href="#" id="logoutBtn"><span class="nav-icon">🚪</span> Sign Out</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebarUserAvatar">SA</div>
+        <div>
+          <div class="user-name" id="sidebarUserName">Loading...</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="main-header">
+      <div class="header-title">
+        <h1>Subscriptions</h1>
+        <p>Manage restaurant plans and billing</p>
+      </div>
+      <div class="header-actions">
+        <select id="planFilter" class="input" style="width:140px;padding:8px 12px;" onchange="loadSubscriptions()">
+          <option value="">All Plans</option>
+          <option value="basic">Basic</option>
+          <option value="pro">Pro</option>
+          <option value="enterprise">Enterprise</option>
+        </select>
+        <select id="statusFilter" class="input" style="width:140px;padding:8px 12px;" onchange="loadSubscriptions()">
+          <option value="">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="trial">Trial</option>
+          <option value="expired">Expired</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </header>
+
+    <main class="page-content animate-fadeInUp">
+
+      <!-- Stats -->
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:28px;">
+        <div class="stat-card primary"><div class="stat-icon primary">💳</div><div class="stat-value" id="stActive">—</div><div class="stat-label">Active Subscriptions</div></div>
+        <div class="stat-card success"><div class="stat-icon success">💰</div><div class="stat-value" id="stMrr">—</div><div class="stat-label">MRR (Est.)</div></div>
+        <div class="stat-card warning"><div class="stat-icon warning">⏰</div><div class="stat-value" id="stTrial">—</div><div class="stat-label">On Trial</div></div>
+        <div class="stat-card danger"><div class="stat-icon danger">⚠️</div><div class="stat-value" id="stExpiring">—</div><div class="stat-label">Expiring This Week</div></div>
+      </div>
+
+      <!-- Plan breakdown -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;" id="planCards">
+        <div class="card" style="border-top:3px solid var(--text-muted);">
+          <div class="card-body" style="text-align:center;">
+            <div style="font-size:30px;font-weight:800;" id="planBasicCount">—</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">Basic Plan</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">₹999/mo</div>
+          </div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--primary);">
+          <div class="card-body" style="text-align:center;">
+            <div style="font-size:30px;font-weight:800;color:var(--primary-light);" id="planProCount">—</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">Pro Plan</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">₹2,499/mo</div>
+          </div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--warning);">
+          <div class="card-body" style="text-align:center;">
+            <div style="font-size:30px;font-weight:800;color:var(--warning);" id="planEnterpriseCount">—</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">Enterprise Plan</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">₹5,999/mo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">All Subscriptions</div><div class="card-subtitle" id="subCount"></div></div>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="searchInput" placeholder="🔍 Search restaurant…" style="width:220px;padding:8px 12px;" oninput="debounceSearch()">
+          </div>
+        </div>
+        <table class="table-wrap" style="border:none;border-radius:0;">
+          <table>
+            <thead><tr>
+              <th>Restaurant</th><th>Plan</th><th>Status</th><th>Started</th><th>Expires</th><th>Auto-Renew</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="subBody"><tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">Loading…</td></tr></tbody>
+          </table>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Change Plan Modal -->
+<div class="modal-overlay" id="changePlanModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div><h2 class="modal-title">Change Subscription</h2><div class="modal-subtitle" id="changePlanRestaurantName"></div></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <form id="changePlanForm" onsubmit="savePlan(event)">
+      <div class="modal-body">
+        <input type="hidden" id="cpRestaurantId">
+        <div class="form-group">
+          <label>Plan</label>
+          <select id="cpPlan">
+            <option value="basic">Basic — ₹999/mo</option>
+            <option value="pro">Pro — ₹2,499/mo</option>
+            <option value="enterprise">Enterprise — ₹5,999/mo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="cpStatus">
+            <option value="active">Active</option>
+            <option value="trial">Trial</option>
+            <option value="expired">Expired</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" id="cpStart">
+          </div>
+          <div class="form-group">
+            <label>Expiry Date</label>
+            <input type="date" id="cpExpiry">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="toggle-wrap">
+            <span>Auto-Renew</span>
+            <label class="toggle">
+              <input type="checkbox" id="cpAutoRenew" checked>
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script>
+  const PLAN_PRICES = { basic: 999, pro: 2499, enterprise: 5999 };
+  let allSubs = [], searchTimer;
+
+  function debounceSearch() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(filterAndRender, 300);
+  }
+
+  async function loadSubscriptions() {
+    const plan   = document.getElementById('planFilter').value;
+    const status = document.getElementById('statusFilter').value;
+    let url = '/super/subscriptions?limit=200';
+    if (plan)   url += `&plan=${plan}`;
+    if (status) url += `&status=${status}`;
+    try {
+      const r = await api.get(url);
+      allSubs = r.data?.subscriptions || r.data || [];
+
+      // Stats
+      const now = new Date();
+      const weekAhead = new Date(now.getTime() + 7*24*60*60*1000);
+      let mrr = 0, trial = 0, expiring = 0;
+      const planCounts = { basic:0, pro:0, enterprise:0 };
+
+      allSubs.filter(s => s.status === 'active').forEach(s => {
+        mrr += PLAN_PRICES[s.plan] || 0;
+        if (planCounts[s.plan] !== undefined) planCounts[s.plan]++;
+        if (s.end_date && new Date(s.end_date) <= weekAhead) expiring++;
+      });
+      allSubs.filter(s => s.status === 'trial').forEach(() => trial++);
+
+      document.getElementById('stActive').textContent     = allSubs.filter(s => s.status==='active').length;
+      document.getElementById('stMrr').textContent        = '₹' + mrr.toLocaleString('en-IN');
+      document.getElementById('stTrial').textContent      = trial;
+      document.getElementById('stExpiring').textContent   = expiring;
+      document.getElementById('planBasicCount').textContent     = planCounts.basic;
+      document.getElementById('planProCount').textContent       = planCounts.pro;
+      document.getElementById('planEnterpriseCount').textContent = planCounts.enterprise;
+
+      document.getElementById('subCount').textContent = `${allSubs.length} subscriptions`;
+      filterAndRender();
+    } catch (e) { toast.error('Failed to load subscriptions.'); console.error(e); }
+  }
+
+  function filterAndRender() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = search
+      ? allSubs.filter(s => (s.restaurant_name||'').toLowerCase().includes(search) || (s.city||'').toLowerCase().includes(search))
+      : allSubs;
+    renderTable(filtered);
+  }
+
+  const planMap  = { basic:'badge-basic', pro:'badge-pro', enterprise:'badge-enterprise' };
+  const statusMap = { active:'badge-active', trial:'badge-new', expired:'badge-inactive', cancelled:'badge-inactive' };
+  const fmtDate  = (d) => d ? new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}) : '—';
+
+  function isExpiringSoon(d) {
+    if (!d) return false;
+    const diff = new Date(d) - new Date();
+    return diff > 0 && diff < 7*24*60*60*1000;
+  }
+
+  function renderTable(subs) {
+    const tbody = document.getElementById('subBody');
+    if (!subs.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No subscriptions found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = subs.map(s => `<tr>
+      <td>
+        <div style="font-weight:600;">${s.restaurant_name||'—'}</div>
+        <div style="font-size:11px;color:var(--text-muted);">${s.city||''} ${s.country||''}</div>
+      </td>
+      <td><span class="badge ${planMap[s.plan]||'badge-basic'}">${capitalize(s.plan||'basic')}</span></td>
+      <td><span class="badge ${statusMap[s.status]||'badge-basic'}">${capitalize(s.status||'unknown')}</span></td>
+      <td>${fmtDate(s.start_date)}</td>
+      <td style="color:${isExpiringSoon(s.end_date)?'var(--warning)':''};">${fmtDate(s.end_date)}${isExpiringSoon(s.end_date)?'  ⚠️':''}</td>
+      <td>${s.auto_renew ? '<span style="color:var(--success);">✓ On</span>' : '<span style="color:var(--text-muted);">Off</span>'}</td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick='openChangePlan(${JSON.stringify(s).replace(/'/g,"\\'")})'> Change Plan</button>
+      </td>
+    </tr>`).join('');
+  }
+
+  function openChangePlan(s) {
+    document.getElementById('cpRestaurantId').value = s.restaurant_id;
+    document.getElementById('changePlanRestaurantName').textContent = s.restaurant_name;
+    document.getElementById('cpPlan').value       = s.plan || 'basic';
+    document.getElementById('cpStatus').value     = s.status || 'active';
+    document.getElementById('cpStart').value      = s.start_date ? s.start_date.split('T')[0] : '';
+    document.getElementById('cpExpiry').value     = s.end_date   ? s.end_date.split('T')[0]   : '';
+    document.getElementById('cpAutoRenew').checked = s.auto_renew !== false;
+    document.getElementById('changePlanModal').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('changePlanModal').classList.remove('open'); }
+
+  async function savePlan(e) {
+    e.preventDefault();
+    const id = document.getElementById('cpRestaurantId').value;
+    try {
+      await api.patch(`/super/subscriptions/${id}`, {
+        plan:        document.getElementById('cpPlan').value,
+        status:      document.getElementById('cpStatus').value,
+        start_date:  document.getElementById('cpStart').value || null,
+        end_date:    document.getElementById('cpExpiry').value || null,
+        auto_renew:  document.getElementById('cpAutoRenew').checked,
+      });
+      toast.success('Subscription updated!');
+      closeModal();
+      loadSubscriptions();
+    } catch (err) { toast.error(err.message); }
+  }
+
+  loadSubscriptions();
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurants — DineOS Super Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🍽️</div>
+        <div>
+          <div class="brand-name">DineOS</div>
+          <div class="brand-tagline" style="font-size:10px;color:var(--text-muted)">Super Admin</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a class="nav-item active" href="restaurants.html"><span class="nav-icon">🏪</span> Restaurants</a>
+      <a class="nav-item" href="onboard.html"><span class="nav-icon">➕</span> Onboard New</a>
+      <div class="nav-section-label" style="margin-top:8px">System</div>
+      <a class="nav-item" href="#" id="logoutBtn"><span class="nav-icon">🚪</span> Sign Out</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebarUserAvatar">SA</div>
+        <div>
+          <div class="user-name" id="sidebarUserName">Loading...</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="main-header">
+      <div class="header-title">
+        <h1>Restaurants</h1>
+        <p id="totalCount">Loading...</p>
+      </div>
+      <div class="header-actions">
+        <a href="onboard.html" class="btn btn-primary btn-sm">➕ Onboard Restaurant</a>
+      </div>
+    </header>
+
+    <main class="page-content animate-fadeInUp">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search by name, email, city..." />
+        </div>
+        <select id="statusFilter" class="filter-select">
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <select id="planFilter" class="filter-select">
+          <option value="">All Plans</option>
+          <option value="basic">Basic</option>
+          <option value="pro">Pro</option>
+          <option value="enterprise">Enterprise</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <div class="card">
+        <div class="table-wrap" style="border:none;border-radius:var(--radius-lg) var(--radius-lg) 0 0">
+          <table>
+            <thead>
+              <tr>
+                <th>Restaurant</th>
+                <th>Owner</th>
+                <th>City</th>
+                <th>Plan</th>
+                <th>API Key</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="8"><div class="empty-state"><span class="empty-icon">⏳</span><div class="empty-title">Loading restaurants…</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination -->
+        <div class="pagination">
+          <div class="pagination-info" id="pageInfo">—</div>
+          <div class="pagination-btns">
+            <button class="btn btn-secondary btn-sm" id="prevBtn" disabled>← Prev</button>
+            <button class="btn btn-secondary btn-sm" id="nextBtn" disabled>Next →</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Toggle status confirm modal -->
+<div class="modal-overlay" id="toggleModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="toggleModalTitle">Confirm Action</div>
+        <div class="modal-subtitle" id="toggleModalSub">This will change the restaurant status.</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('toggleModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-warning">
+        <span class="alert-icon">⚠️</span>
+        <span id="toggleModalMsg">Are you sure?</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('toggleModal')">Cancel</button>
+      <button class="btn btn-primary" id="toggleConfirmBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/restaurants.js"></script>
+</body>
+</html>

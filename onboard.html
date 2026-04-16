@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onboard Restaurant — DineOS Super Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🍽️</div>
+        <div>
+          <div class="brand-name">DineOS</div>
+          <div class="brand-tagline" style="font-size:10px;color:var(--text-muted)">Super Admin</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a class="nav-item" href="restaurants.html"><span class="nav-icon">🏪</span> Restaurants</a>
+      <a class="nav-item active" href="onboard.html"><span class="nav-icon">➕</span> Onboard New</a>
+      <div class="nav-section-label" style="margin-top:8px">System</div>
+      <a class="nav-item" href="#" id="logoutBtn"><span class="nav-icon">🚪</span> Sign Out</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebarUserAvatar">SA</div>
+        <div>
+          <div class="user-name" id="sidebarUserName">Loading...</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="main-header">
+      <div class="header-title">
+        <h1>Onboard Restaurant</h1>
+        <p>Create a new restaurant tenant with API credentials</p>
+      </div>
+      <div class="header-actions">
+        <a href="restaurants.html" class="btn btn-ghost btn-sm">← Back to List</a>
+      </div>
+    </header>
+
+    <main class="page-content animate-fadeInUp">
+      <div style="max-width:700px;margin:0 auto">
+
+        <!-- Stepper -->
+        <div class="stepper" id="stepper">
+          <div class="step active" id="step-1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Basic Info</div>
+          </div>
+          <div class="step-line" id="line-1"></div>
+          <div class="step" id="step-2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Owner</div>
+          </div>
+          <div class="step-line" id="line-2"></div>
+          <div class="step" id="step-3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Location</div>
+          </div>
+          <div class="step-line" id="line-3"></div>
+          <div class="step" id="step-4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Branding</div>
+          </div>
+        </div>
+
+        <!-- Step Panels -->
+        <div class="card">
+          <div class="card-body">
+
+            <!-- Step 1: Basic Info -->
+            <div class="step-panel active" id="panel-1">
+              <h2 class="section-title">Restaurant Information</h2>
+              <p class="text-muted text-sm mb-4">Enter the restaurant's display name and subscription plan.</p>
+
+              <div class="form-group">
+                <label for="name">Restaurant Name <span class="required">*</span></label>
+                <input type="text" id="name" placeholder="e.g. Pizza Palace, Biryani House" />
+                <div class="hint">This name will appear in the customer app and admin panel.</div>
+              </div>
+
+              <div class="form-group">
+                <label>URL Slug (auto-generated)</label>
+                <div class="input-group">
+                  <span class="input-prefix">dineos.com/</span>
+                  <input type="text" id="slugPreview" style="padding-left:104px;color:var(--text-muted)" readonly />
+                </div>
+                <div class="hint">Generated from the restaurant name. Used in URLs.</div>
+              </div>
+
+              <div class="form-group">
+                <label for="plan">Subscription Plan <span class="required">*</span></label>
+                <select id="plan">
+                  <option value="basic">Basic — Core features only</option>
+                  <option value="pro">Pro — All features + Analytics</option>
+                  <option value="enterprise">Enterprise — Custom + Priority support</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="notes">Internal Notes (optional)</label>
+                <textarea id="notes" placeholder="Any private notes about this restaurant (only visible to Super Admins)..."></textarea>
+              </div>
+            </div>
+
+            <!-- Step 2: Owner Details -->
+            <div class="step-panel" id="panel-2">
+              <h2 class="section-title">Owner / Contact Details</h2>
+              <p class="text-muted text-sm mb-4">The restaurant owner's contact information.</p>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="ownerName">Owner Full Name</label>
+                  <input type="text" id="ownerName" placeholder="Rahul Sharma" />
+                </div>
+                <div class="form-group">
+                  <label for="ownerPhone">Phone Number</label>
+                  <input type="tel" id="ownerPhone" placeholder="+91 98765 43210" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="ownerEmail">Owner Email <span class="required">*</span></label>
+                <input type="email" id="ownerEmail" placeholder="owner@restaurant.com" />
+                <div class="hint">This email is used for account communications. Must be unique.</div>
+              </div>
+            </div>
+
+            <!-- Step 3: Location -->
+            <div class="step-panel" id="panel-3">
+              <h2 class="section-title">Location</h2>
+              <p class="text-muted text-sm mb-4">Restaurant physical address details.</p>
+
+              <div class="form-group">
+                <label for="address">Street Address</label>
+                <textarea id="address" rows="2" placeholder="123 MG Road, Near Metro Station"></textarea>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="city">City</label>
+                  <input type="text" id="city" placeholder="Bangalore" />
+                </div>
+                <div class="form-group">
+                  <label for="state">State</label>
+                  <input type="text" id="state" placeholder="Karnataka" />
+                </div>
+              </div>
+
+              <div class="form-group" style="max-width:200px">
+                <label for="pincode">Pincode</label>
+                <input type="text" id="pincode" placeholder="560001" maxlength="6" />
+              </div>
+            </div>
+
+            <!-- Step 4: Branding -->
+            <div class="step-panel" id="panel-4">
+              <h2 class="section-title">Brand Colours & Tagline</h2>
+              <p class="text-muted text-sm mb-4">These can always be updated later from the restaurant's detail page.</p>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Primary Colour</label>
+                  <div class="color-input-group">
+                    <input type="color" id="primaryColor" value="#E63946" />
+                    <input type="text" id="primaryColorText" value="#E63946" maxlength="7" style="font-family:monospace" />
+                  </div>
+                  <div class="hint">Main brand colour (buttons, headers)</div>
+                </div>
+                <div class="form-group">
+                  <label>Secondary Colour</label>
+                  <div class="color-input-group">
+                    <input type="color" id="secondaryColor" value="#1D3557" />
+                    <input type="text" id="secondaryColorText" value="#1D3557" maxlength="7" style="font-family:monospace" />
+                  </div>
+                  <div class="hint">Accent / background colour</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="tagline">Tagline</label>
+                <input type="text" id="tagline" placeholder="e.g. Best Pizza in Town! · Since 2010" maxlength="255" />
+              </div>
+
+              <!-- Preview -->
+              <div style="margin-top:24px">
+                <label>Brand Preview</label>
+                <div id="brandPreview" style="border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border);margin-top:8px">
+                  <div id="previewHeader" style="padding:20px 24px;display:flex;align-items:center;gap:12px">
+                    <div id="previewDot" style="width:40px;height:40px;border-radius:12px;background:#E63946;display:flex;align-items:center;justify-content:center;font-size:18px">🍽️</div>
+                    <div>
+                      <div id="previewName" style="font-weight:700;font-size:16px">Restaurant Name</div>
+                      <div id="previewTagline" style="font-size:12px;opacity:0.7">Your tagline here</div>
+                    </div>
+                  </div>
+                  <div style="height:4px;" id="previewAccent"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Error display -->
+            <div id="stepError" class="alert alert-error mt-4" style="display:none">
+              <span class="alert-icon">⚠️</span>
+              <span id="stepErrorText"></span>
+            </div>
+
+            <!-- Step Navigation Buttons -->
+            <div class="flex justify-between items-center mt-6">
+              <button class="btn btn-ghost" id="backBtn" style="visibility:hidden">← Back</button>
+              <div class="flex gap-2">
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="nextBtn">
+                  <span id="nextBtnText">Next →</span>
+                  <div class="spinner" id="nextSpinner" style="display:none"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Success Modal — shows the API key -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-header" style="border-bottom-color:rgba(16,185,129,0.2)">
+      <div>
+        <div class="modal-title" style="color:var(--success)">✅ Restaurant Onboarded!</div>
+        <div class="modal-subtitle" id="successRestName">—</div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="api-key-callout">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <strong style="font-size:13px;color:var(--info)">🗝️ API Key — Save This Now!</strong>
+          <button class="copy-btn" id="copyKeyBtn" onclick="copyApiKey()">📋 Copy</button>
+        </div>
+        <div class="api-key-display" id="apiKeyDisplay">rk_live_...</div>
+        <div class="alert alert-warning" style="margin-top:12px;margin-bottom:0;font-size:12px">
+          <span class="alert-icon">⚠️</span>
+          <span>This key will <strong>never be shown in full again</strong>. Copy it and give it to the restaurant for their frontend apps.</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+        <div><span class="text-muted">Restaurant ID</span><br><strong id="successRestId" style="font-family:monospace;font-size:12px">—</strong></div>
+        <div><span class="text-muted">Plan</span><br><span id="successPlan">—</span></div>
+        <div><span class="text-muted">Slug</span><br><strong id="successSlug" style="font-family:monospace;font-size:12px">—</strong></div>
+        <div><span class="text-muted">Owner Email</span><br><strong id="successEmail">—</strong></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="onboardAnotherBtn">+ Onboard Another</button>
+      <a id="viewDetailBtn" href="#" class="btn btn-primary">View Restaurant →</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/onboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurant Detail — DineOS Super Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .detail-hero {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .detail-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--grad-primary);
+    }
+    .detail-avatar {
+      width: 72px; height: 72px;
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .detail-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .detail-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+    .detail-meta-item { font-size: 13px; color: var(--text-muted); }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .info-item { }
+    .info-label { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .info-value { font-size: 14px; font-weight: 500; }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .feature-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🍽️</div>
+        <div>
+          <div class="brand-name">DineOS</div>
+          <div class="brand-tagline" style="font-size:10px;color:var(--text-muted)">Super Admin</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a class="nav-item active" href="restaurants.html"><span class="nav-icon">🏪</span> Restaurants</a>
+      <a class="nav-item" href="onboard.html"><span class="nav-icon">➕</span> Onboard New</a>
+      <div class="nav-section-label" style="margin-top:8px">System</div>
+      <a class="nav-item" href="#" id="logoutBtn"><span class="nav-icon">🚪</span> Sign Out</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebarUserAvatar">SA</div>
+        <div>
+          <div class="user-name" id="sidebarUserName">Loading...</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="main-header">
+      <div class="header-title">
+        <h1 id="pageTitle">Restaurant Detail</h1>
+        <p>View and manage this restaurant's configuration</p>
+      </div>
+      <div class="header-actions">
+        <a href="restaurants.html" class="btn btn-ghost btn-sm">← All Restaurants</a>
+        <button class="btn btn-danger btn-sm" id="toggleStatusBtn" style="display:none">Loading...</button>
+      </div>
+    </header>
+
+    <main class="page-content animate-fadeInUp" id="pageContent">
+      <!-- Loading state -->
+      <div id="loadingState" style="padding:60px;text-align:center;color:var(--text-muted)">
+        ⏳ Loading restaurant details...
+      </div>
+
+      <!-- Main content (hidden until loaded) -->
+      <div id="mainDetail" style="display:none">
+
+        <!-- Hero -->
+        <div class="detail-hero" id="detailHero">
+          <div class="detail-avatar" id="detailAvatar">R</div>
+          <div style="flex:1">
+            <div class="detail-name" id="detailName">—</div>
+            <div class="detail-meta">
+              <span class="detail-meta-item" id="detailSlug">—</span>
+              <span id="detailPlanBadge"></span>
+              <span id="detailStatusBadge"></span>
+              <span class="detail-meta-item" id="detailCity">—</span>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div class="text-muted text-sm">Onboarded</div>
+            <div style="font-size:13px;font-weight:600" id="detailJoined">—</div>
+          </div>
+        </div>
+
+        <!-- Grid: Owner + Location + API Key -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px">
+
+          <!-- Owner Info -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">👤 Owner Details</div>
+            </div>
+            <div class="card-body">
+              <div style="display:grid;gap:16px">
+                <div class="info-item">
+                  <div class="info-label">Name</div>
+                  <div class="info-value" id="infoOwnerName">—</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Email</div>
+                  <div class="info-value" id="infoOwnerEmail">—</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Phone</div>
+                  <div class="info-value" id="infoOwnerPhone">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📍 Location</div>
+            </div>
+            <div class="card-body">
+              <div style="display:grid;gap:16px">
+                <div class="info-item">
+                  <div class="info-label">Address</div>
+                  <div class="info-value" id="infoAddress">—</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">City / State</div>
+                  <div class="info-value" id="infoCityState">—</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Pincode</div>
+                  <div class="info-value" id="infoPincode">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- API Key Card -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🔑 API Key</div>
+              <div class="card-subtitle">Used by restaurant's frontend apps to authenticate with DineOS API</div>
+            </div>
+            <button class="btn btn-danger btn-sm" id="regenerateKeyBtn">♻️ Regenerate Key</button>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-warning mb-4">
+              <span class="alert-icon">⚠️</span>
+              <span>The full API key is only shown once at onboarding or after regeneration. Below is a masked preview for identification.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <div class="api-key-masked" id="apiKeyPreview">rk_live_••••••••...</div>
+              <div class="text-muted text-sm" id="apiKeyNote">Regenerate to get a new full key</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Branding -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div class="card-title">🎨 Branding Config</div>
+            <div class="card-subtitle">White-label design for this restaurant's app</div>
+          </div>
+          <div class="card-body">
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Primary Colour</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                  <div id="primaryColorSwatch" style="width:24px;height:24px;border-radius:50%;border:2px solid var(--border)"></div>
+                  <span class="info-value" id="infoPrimaryColor" style="font-family:monospace">—</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Secondary Colour</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                  <div id="secondaryColorSwatch" style="width:24px;height:24px;border-radius:50%;border:2px solid var(--border)"></div>
+                  <span class="info-value" id="infoSecondaryColor" style="font-family:monospace">—</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Font Family</div>
+                <div class="info-value" id="infoFont">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Tagline</div>
+                <div class="info-value" id="infoTagline">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Custom Domain</div>
+                <div class="info-value" id="infoCustomDomain">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Last Config Update</div>
+                <div class="info-value" id="infoConfigUpdated">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature Flags -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div class="card-title">⚙️ Enabled Features</div>
+            <div class="card-subtitle">Toggle which modules this restaurant can access</div>
+          </div>
+          <div class="card-body">
+            <div class="feature-grid" id="featureGrid">Loading...</div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div class="card-title">📝 Internal Notes</div>
+            <div class="card-subtitle">Only visible to Super Admins</div>
+            <button class="btn btn-ghost btn-sm" id="saveNotesBtn">Save</button>
+          </div>
+          <div class="card-body">
+            <textarea id="infoNotes" rows="3" placeholder="Add internal notes about this restaurant..." style="width:100%"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Regenerate Key Modal -->
+<div class="modal-overlay" id="regenModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">♻️ Regenerate API Key</div>
+        <div class="modal-subtitle">The old key will be immediately invalidated</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('regenModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error mb-4">
+        <span class="alert-icon">⚠️</span>
+        <span>All frontend apps using the old API key will <strong>stop working immediately</strong> until updated with the new key.</span>
+      </div>
+      <div class="form-group">
+        <label for="regenReason">Reason for rotation</label>
+        <input type="text" id="regenReason" placeholder="e.g. Key compromise, routine rotation..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('regenModal')">Cancel</button>
+      <button class="btn btn-danger" id="regenConfirmBtn">♻️ Regenerate Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Key Modal (shown after successful regen) -->
+<div class="modal-overlay" id="newKeyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" style="color:var(--success)">✅ New Key Generated</div>
+    </div>
+    <div class="modal-body">
+      <div class="api-key-callout">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <strong style="font-size:13px;color:var(--info)">New API Key</strong>
+          <button class="copy-btn" id="copyNewKeyBtn">📋 Copy</button>
+        </div>
+        <div class="api-key-display" id="newKeyDisplay">rk_live_...</div>
+        <div class="alert alert-warning" style="margin-top:12px;margin-bottom:0;font-size:12px">
+          <span class="alert-icon">⚠️</span>
+          <span>This key is shown <strong>once only</strong>. Update all restaurant frontend apps immediately.</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal('newKeyModal')">Done</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/restaurant-detail.js"></script>
+</body>
+</html>
